@@ -4,29 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
+use App\Http\Requests\UseRegisterrRequest;
 
 class AuthController extends Controller
 {
-    public function register(Request $request){
-        $validator = Validator::make($request->all(), [
-            'first_name' => ['required', 'string', 'regex:/^[\p{Arabic}A-Za-z]+$/u'],
-            'last_name' => ['required', 'string', 'regex:/^[\p{Arabic}A-Za-z]+$/u'],
-            'phone' => ['required', 'numeric'],
-            'gender' => ['required', 'string', Rule::in(['mela', 'female'])],
-            'birthdate' => ['required', 'string', 'date'],
-            'avatar' => ['nullable', 'string'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8'],
-        ]);
-        
-
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        
+    public function register(UseRegisterrRequest $request){
         $user =  User::create([
             'first_name'=> $request->first_name,
             'last_name'=> $request->last_name,
@@ -44,4 +30,26 @@ class AuthController extends Controller
         return  response()->json(['data'=>$user,'message'=>'you register success'], 200);
 
     }
+
+
+    public function login(UserRequest $request){
+
+            $user = User::where('email', $request->email)->first();
+    
+            if ($user) {
+                if (!Hash::check($request->password, $user->password)) {
+                    return  response()->json(['message'=>'wrong password'], 400);
+                }
+    
+                $tokens = $user->createToken('Android')->plainTextToken;
+                $user->token = 'Bearer ' . $tokens;
+               
+                return  response()->json(['data'=>$user,'message'=>'you login success'], 200);
+    
+    
+            } else{
+                return  response()->json(['message'=>'you are not register before'], 400);
+            }
+            
+        }
 }
