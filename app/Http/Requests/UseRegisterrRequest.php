@@ -31,8 +31,7 @@ class UseRegisterrRequest extends FormRequest
             'gender' => ['required', 'string', Rule::in(['mela', 'female'])],
             'birthdate' => ['required', 'string', 'date'],
             'avatar' => ['nullable', 'string'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string','confirmed', 'min:8'],
         ];
     }
 }

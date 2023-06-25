@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use File;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Traits\CustomHelpers;
@@ -9,10 +10,11 @@ use Illuminate\Validation\Rule;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UseUpdateRequest;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\UseRegisterrRequest;
 use App\Http\Requests\UseUpdateImageRequest;
-use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -63,25 +65,38 @@ class AuthController extends Controller
         return  response()->json(['message' => 'logout success'], 200);
     }
 
-    // $image_path = public_path('images/'.'1687683145.jpg');
-    // if(File::exists($image_path)) {
-    //   File::delete($image_path);
-    // }
 
-    public function updateImage(UseUpdateImageRequest $request)
+
+    public function updateUserInfo(UseUpdateRequest $request)
     {
+            $user=Auth::user();
 
-        $path = public_path('images/');
-        !is_dir($path) &&
-            mkdir($path, 0777, true);
+            if($request->hasFile('avatar')){
+                if(File::exists(public_path('images/'. $user->avatar))) {
+                    File::delete(public_path('images/'. $user->avatar));
+                  }
 
-        $imageName = time() . '.' . $request->image->extension();
-        $request->image->move($path, $imageName);
-             
-                $user=Auth::user();
-                $user->update(['avatar' =>$imageName]);
+                  $path = public_path('images/');
+                  !is_dir($path) &&
+                  mkdir($path, 0777, true);
+                  $imageName = time() . '.' . $request->avatar->extension();
+                  $request->avatar->move($path, $imageName);
+            }
 
-        return  response()->json(['message' => $user], 200);
+
+            $user->update([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'birthdate' => $request->birthdate,
+                'avatar' => $imageName,
+                'password' => Hash::make($request->password),
+            ]);
+
+            
+
+            return  response()->json(['message' => $user], 200);
 
 
     }

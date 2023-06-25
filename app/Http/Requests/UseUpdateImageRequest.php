@@ -24,7 +24,7 @@ class UseUpdateImageRequest extends FormRequest
     public function rules()
     {
         return [
-            'image' => ['required', 'mimes:jpeg,png,jpg,gif,PNG', 'max:2048'], 
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,PNG', 'max:2048'], 
         ];
     }
 }

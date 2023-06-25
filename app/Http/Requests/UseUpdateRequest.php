@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Http\Requests;
+
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UseRegisterrRequest extends FormRequest
+class UseUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,7 +30,7 @@ class UseRegisterrRequest extends FormRequest
             'phone' => ['nullable', 'numeric'],
             'gender' => ['nullable', 'string', Rule::in(['mela', 'female'])],
             'birthdate' => ['nullable', 'string', 'date'],
-            'avatar' => ['nullable', 'string'],
+            'avatar' => ['nullable', 'image','mimes:jpeg,png,jpg,gif,PNG', 'max:2048'], 
             'email' => ['nullable', 'email', Rule::unique('users')->ignore(auth()->id())],
             'password' => ['nullable', 'string', 'min:8'],
         ];
