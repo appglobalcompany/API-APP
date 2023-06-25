@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\UseRegisterrRequest;
@@ -51,5 +52,13 @@ class AuthController extends Controller
                 return  response()->json(['message'=>'you are not register before'], 400);
             }
             
+        }
+
+        public function logout(){
+
+            $user=Auth::guard('sanctum')->user();
+            $user->tokens()->delete();
+            return  response()->json(['message'=>'logout success'], 200);
+
         }
 }
